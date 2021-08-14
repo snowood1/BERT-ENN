@@ -2,7 +2,7 @@
 
 This repository contains the essential code for the paper [Uncertainty-Aware Reliable Text Classification (KDD 2021)](https://arxiv.org/abs/2107.07114).
 
-Will be availble soon.
+Will be available soon.
 
 ## Citation
 
