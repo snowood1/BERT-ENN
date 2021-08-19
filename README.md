@@ -9,8 +9,18 @@ Will be available soon.
 If you find this repo useful in your research, please consider citing:
 
     @article{hu2021uncertainty,
-      title={Uncertainty-Aware Reliable Text Classification},
-      author={Hu, Yibo and Khan, Latifur},
-      journal={arXiv preprint arXiv:2107.07114},
-      year={2021}
+        author = {Hu, Yibo and Khan, Latifur},
+        title = {Uncertainty-Aware Reliable Text Classification},
+        year = {2021},
+        isbn = {9781450383325},
+        publisher = {Association for Computing Machinery},
+        address = {New York, NY, USA},
+        url = {https://doi.org/10.1145/3447548.3467382},
+        doi = {10.1145/3447548.3467382},
+        booktitle = {Proceedings of the 27th ACM SIGKDD Conference on Knowledge Discovery &amp; Data Mining},
+        pages = {628–636},
+        numpages = {9},
+        keywords = {text classification, out-of-distribution detection, uncertainty qualification},
+        location = {Virtual Event, Singapore},
+        series = {KDD '21}
     }
