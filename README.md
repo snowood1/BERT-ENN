@@ -71,7 +71,7 @@ The necessary packages include:
 
 ## Reference
 
-Our implmentation are motivated from:
+Our implmentation is motivated from:
 
 [1] Outlier Exposure. https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification
 
