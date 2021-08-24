@@ -59,7 +59,7 @@ The necessary packages include:
 	python bert_oe.py --dataset sst --seed 0				# Outlier Explosure
 	
 	
- **ENN** See Table 5: Hyper-parameters for BERT-ENNs
+ **ENN**.  See Table 5: Hyper-parameters for BERT-ENNs.
  
  	python train_bert_enn.py --dataset 20news --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
 	python train_bert_enn.py --dataset trec --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
