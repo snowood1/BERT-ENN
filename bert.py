@@ -266,7 +266,7 @@ def main():
 
         print("Test Accuracy: {}".format(eval_accurate_nb/nb_test_examples))
 
-        dirname = '{}/BERT-oe-{}'.format(args.dataset, args.seed)
+        dirname = '{}/BERT-base-{}'.format(args.dataset, args.seed)
 
         output_dir = './model_save/{}'.format(dirname)
         if not os.path.exists(output_dir):
