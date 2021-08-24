@@ -50,15 +50,15 @@ The necessary packages include:
 
 3.  To train ENN models from scratch by yourselves:
 
-### Baselines:
+**Baselines**
 	
 	python bert.py --model base --dataset sst --seed 0			# maximum softmax scores
 	python bert.py --model mc-dropout --dataset sst --seed 0		# MC-dropout
 	python bert.py --model temperature --dataset sst --seed 0		# temperature scaling
 	python manifold-smoothing.py --dataset sst --seed 0 			# Manifold smoothing
 	python bert_oe.py --dataset sst --seed 0				# Outlier Explosure
-     
-### ENN
+	
+**ENN**
 	python train_bert_enn.py --dataset 20news --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
 	python train_bert_enn.py --dataset trec --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
 	python train_bert_enn.py --dataset sst --train_batch_size 32 --beta_in 0.01 --beta_oe 1 --beta_off 0.1
