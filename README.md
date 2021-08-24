@@ -71,7 +71,7 @@ The necessary packages include:
 
 ## Reference
 
-Our implementation is motivated by:
+The implementation of baselines are modified from:
 
 [1] Outlier Exposure. https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification
 
