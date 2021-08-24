@@ -1,3 +1,5 @@
+# Modified from https://github.com/Lingkai-Kong/Calibrated-BERT-Fine-Tuning/blob/main/manifold-smoothing.py
+
 import os
 # os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
@@ -182,7 +184,7 @@ def main():
     parser.add_argument("--eval_batch_size", default=64, type=int, help="Batch size for training.")
     parser.add_argument("--epochs", default=10, type=int, help="Number of epochs for training.")
     parser.add_argument("--seed", default=0, type=int, help="Number of epochs for training.")
-    parser.add_argument("--dataset", default='20news-15', type=str, help="dataset")
+    parser.add_argument("--dataset", default='20news', type=str, help="dataset")
     parser.add_argument("--weight_decay", default=0.0, type=float, help="Weight decay if we apply some.")
     parser.add_argument("--beta_on", default=1., type=float, help="Weight of on manifold reg")
     parser.add_argument("--beta_off", default=1., type=float, help="Weight of off manifold reg")
