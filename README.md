@@ -28,11 +28,12 @@ The necessary packages include:
   	You can also simply download the preprocessed datasets and the saved results from [here](https://drive.google.com/drive/folders/1wMlKX5_Gfubsant3mtVH_yh2VL_yv06O?usp=sharing)
 
 
-2.  To reproduce results of Table 3 and 4 using the saved checkpoints, run the code below:
+2.  To reproduce results of Table 3 and 4 using the saved checkpoints, run the code below: (You can change sst to 20news or trec.  )
 	
 	### Baselines:
 	
 	python test_bert.py --model base --dataset sst --index 0			# maximum softmax scores
+	
 	python test_bert.py --model mc-dropout --dataset sst --index 0			# MC-dropout
 	
 	python test_bert.py --model temperature --dataset sst --index 0			# temperature scaling
@@ -52,8 +53,6 @@ The necessary packages include:
 	
 	python test_bert_enn.py --dataset sst --path ./result/sst/ENN_MIX/9.pt		# ENN with Mixture Regularizers
 	
-You can change sst to other datasets: 20news or trec.  
-For example: python test_bert_enn.py --dataset 20news --path ./result/20news/ENN_MIX/9.pt
 
 
 3.  To train ENN models from scratch by yourselves:
