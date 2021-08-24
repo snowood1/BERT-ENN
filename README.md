@@ -2,7 +2,7 @@
 
 This repository contains the essential code for the paper [Uncertainty-Aware Reliable Text Classification (KDD 2021)](https://dl.acm.org/doi/10.1145/3447548.3467382).
 
-## Prerequisites:
+## Prerequisites
 The code is written by Python 3.6 in Linux system. The cuda version is 10.2. 
 The necessary packages include:
 
@@ -33,7 +33,6 @@ The necessary packages include:
 	### Baselines:
 	
 	python test_bert.py --model base --dataset sst --index 0			# maximum softmax scores
-	
 	python test_bert.py --model mc-dropout --dataset sst --index 0			# MC-dropout
 	
 	python test_bert.py --model temperature --dataset sst --index 0			# temperature scaling
@@ -81,8 +80,12 @@ For example: python test_bert_enn.py --dataset 20news --path ./result/20news/ENN
 	
 4. We also provide an [example](https://github.com/snowood1/BERT-ENN/blob/main/demo%20result%20figures-final.ipynb) of plotting Figure 3 and Figure 4.
 	
-Our paper and implmentation are motivated from:
+
+## Reference
+
+Our implmentation are motivated from:
 [1] Outlier Exposure. https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification
+
 [2] Manifold Calibration. https://github.com/Lingkai-Kong/Calibrated-BERT-Fine-Tuning
 
 
