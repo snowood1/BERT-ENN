@@ -20,7 +20,7 @@ def main():
     parser.add_argument("--eval_batch_size", default=64, type=int, help="Batch size for training.")
     parser.add_argument("--epochs", default=10, type=int, help="Number of epochs for training.")
     parser.add_argument("--seed", default=0, type=int, help="Number of epochs for training.")
-    parser.add_argument("--dataset", default='trec', type=str, help="dataset", choices = ['20news','trec','sst'])
+    parser.add_argument("--dataset", default='sst', type=str, help="dataset", choices = ['20news','trec','sst'])
     parser.add_argument("--out_dataset", default='multi30k', type=str, help="outlier dataset")
 
     parser.add_argument("--weight_decay", default=0.0, type=float, help="Weight decay if we apply some.")
@@ -32,11 +32,11 @@ def main():
                         help="Perturbation size of out-of-domain adversarial training")
     parser.add_argument('--saved_dataset', type=str, default='y',  choices = ['y','n'],
                         help='whether save the preprocessed pt file of the dataset')
-    parser.add_argument('--warm_up', type=int, default=3,
+    parser.add_argument('--warm_up', type=int, default=2,
                         help='warn up epochs')
     parser.add_argument('--grad_clip', type=float, default=1)
     parser.add_argument('--pretrain', type=str, default=None)
-    parser.add_argument('--evaluate_benchmark', type=str, default='y')
+    parser.add_argument('--evaluate_benchmark', type=str, default='y', help='whether to evaluate on all the OOD datasets. This will overwrite the option --out_dataset')
     parser.add_argument('--MAX_LEN', type=int, default=150)
     parser.add_argument("--base_rate", default=1, type=int, help="base rate N:1")
     parser.add_argument('--recall_level', type=float, default=0.9)
