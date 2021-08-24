@@ -1,6 +1,6 @@
 # BERT-ENN
 
-This repository contains the essential code for the paper [Uncertainty-Aware Reliable Text Classification (KDD 2021)](https://arxiv.org/abs/2107.07114).
+This repository contains the essential code for the paper [Uncertainty-Aware Reliable Text Classification (KDD 2021)](https://dl.acm.org/doi/10.1145/3447548.3467382).
 
 
 ## Getting Started
