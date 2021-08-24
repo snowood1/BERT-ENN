@@ -58,8 +58,10 @@ The necessary packages include:
 	python manifold-smoothing.py --dataset sst --seed 0 			# Manifold smoothing
 	python bert_oe.py --dataset sst --seed 0				# Outlier Explosure
 	
-**ENN**
-	python train_bert_enn.py --dataset 20news --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
+	
+ **ENN**
+ 
+ 	python train_bert_enn.py --dataset 20news --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
 	python train_bert_enn.py --dataset trec --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
 	python train_bert_enn.py --dataset sst --train_batch_size 32 --beta_in 0.01 --beta_oe 1 --beta_off 0.1
     
@@ -70,6 +72,7 @@ The necessary packages include:
 ## Reference
 
 Our implmentation are motivated from:
+
 [1] Outlier Exposure. https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification
 
 [2] Manifold Calibration. https://github.com/Lingkai-Kong/Calibrated-BERT-Fine-Tuning
