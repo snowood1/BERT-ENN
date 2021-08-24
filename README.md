@@ -66,10 +66,9 @@ The necessary packages include:
 	python train_bert_enn.py --dataset sst --train_batch_size 32 --beta_in 0.01 --beta_oe 1 --beta_off 0.1
 
 
-4.  To evaluate your trained models, you can follow Step 2 but replace the input checkpoints paths.
-For example:
+4.  To evaluate your trained models, you can follow Step 2 but replace the input checkpoints paths. For example:
 
-	python test_bert_enn.py --dataset sst --path ./model_save/20news/BERT-ENN-w2adv-0-on-0.0-oe-1.0-off-0.1/9.pt
+		python test_bert_enn.py --dataset sst --path ./model_save/20news/BERT-ENN-w2adv-0-on-0.0-oe-1.0-off-0.1/9.pt
 
 5. We also provide an [example](https://github.com/snowood1/BERT-ENN/blob/main/demo%20result%20figures-final.ipynb) of plotting Figure 3 and Figure 4.
 	
