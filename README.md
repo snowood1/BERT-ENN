@@ -25,7 +25,7 @@ The necessary packages include:
 	
 	We follow the same datasets in [Outlier Exposure](https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification).
 	
-  	You can also simply download the preprocessed **datasets** and the saved **results** from [here.](https://drive.google.com/drive/folders/1AcOK4RI7BXCg3zm3DqJJMREj_At6mOAQ?usp=sharing)
+  	You can also simply download the preprocessed **datasets** and the saved **results** from [here.](https://drive.google.com/drive/folders/1qAoUzQqo-Ys51LFgzvJpAH3fvLP4hhgM?usp=sharing)
 
 
 2.  To reproduce results of Table 3 and 4 using the saved checkpoints, run the code below: (You can change sst to 20news or trec.  )
