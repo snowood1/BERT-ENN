@@ -25,7 +25,7 @@ The necessary packages include:
 	
 	We follow the same datasets in [Outlier Exposure](https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification).
 	
-  	You can also simply download the preprocessed datasets and the saved results from [**here**.](https://drive.google.com/drive/folders/1wMlKX5_Gfubsant3mtVH_yh2VL_yv06O?usp=sharing)
+  	You can also simply download the preprocessed **datasets** and the saved **results** from [here.](https://drive.google.com/drive/folders/1wMlKX5_Gfubsant3mtVH_yh2VL_yv06O?usp=sharing)
 
 
 2.  To reproduce results of Table 3 and 4 using the saved checkpoints, run the code below: (You can change sst to 20news or trec.  )
@@ -50,23 +50,17 @@ The necessary packages include:
 
 3.  To train ENN models from scratch by yourselves:
 
-	### Baselines:
+### Baselines:
 	
 	python bert.py --model base --dataset sst --seed 0			# maximum softmax scores
-	
-	python bert.py --model mc-dropout --dataset sst --seed 0			# MC-dropout
-	
-	python bert.py --model temperature --dataset sst --seed 0			# temperature scaling
-	
-	python bert.py --model manifold-smoothing --dataset sst --seed 0 --eps_in 0.0001 --eps_out 0.001 --eps_y 0.1		# Manifold smoothing
-	
+	python bert.py --model mc-dropout --dataset sst --seed 0		# MC-dropout
+	python bert.py --model temperature --dataset sst --seed 0		# temperature scaling
+	python manifold-smoothing.py --dataset sst --seed 0 			# Manifold smoothing
 	python bert_oe.py --dataset sst --seed 0				# Outlier Explosure
      
-	### ENN
+### ENN
 	python train_bert_enn.py --dataset 20news --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
-	
 	python train_bert_enn.py --dataset trec --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
-	
 	python train_bert_enn.py --dataset sst --train_batch_size 32 --beta_in 0.01 --beta_oe 1 --beta_off 0.1
     
 	
