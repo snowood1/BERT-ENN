@@ -451,8 +451,8 @@ def main():
 
 
         if eval_accuracy > best_val:
-            dirname = '{}/BERT-mf-{}-{}-{}-{}'.format(args.dataset, args.seed, args.eps_in, args.eps_y, args.eps_out)
- 
+#             dirname = '{}/BERT-mf-{}-{}-{}-{}'.format(args.dataset, args.seed, args.eps_in, args.eps_y, args.eps_out)
+            dirname = '{}/BERT-manifold-smoothing-{}'.format(args.dataset, args.index)
             output_dir = './model_save/{}'.format(dirname)
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
