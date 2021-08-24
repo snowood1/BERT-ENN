@@ -22,25 +22,21 @@ The necessary packages include:
 ## Quick Start
 
 1. Create folders 'datasets' and 'model_save' to save downloaded datasets and output results.
-    
-  We follow the same datasets in [Outlier Exposure](https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification).
-  You can also simply download the preprocessed datasets  and saved results from [here](https://drive.google.com/drive/folders/1wMlKX5_Gfubsant3mtVH_yh2VL_yv06O?usp=sharing)
+	
+	We follow the same datasets in [Outlier Exposure](https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification).
+	
+  	You can also simply download the preprocessed datasets and saved results from [here](https://drive.google.com/drive/folders/1wMlKX5_Gfubsant3mtVH_yh2VL_yv06O?usp=sharing)
 
-2.  To train ENN models from scratch:
-    python train_bert_enn.py --dataset 20news --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
-    python train_bert_enn.py --dataset trec --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
-    python train_bert_enn.py --dataset sst --train_batch_size 32 --beta_in 0.01 --beta_oe 1 --beta_off 0.1
-    
-	 
-3.  To reproduce results of Table 3 and 4 using the saved checkpoints, run the code below:
+
+2.  To reproduce results of Table 3 and 4 using the saved checkpoints, run the code below:
 	
 	# Baselines:
 	
-	python test_bert.py --model base --dataset sst --index 0					# maximum softmax scores
-	python test_bert.py --model mc-dropout --dataset sst --index 0				# MC-dropout
-	python test_bert.py --model temperature --dataset sst --index 0				# temperature scaling
+	python test_bert.py --model base --dataset sst --index 0			# maximum softmax scores
+	python test_bert.py --model mc-dropout --dataset sst --index 0			# MC-dropout
+	python test_bert.py --model temperature --dataset sst --index 0			# temperature scaling
 	python test_bert.py --model manifold-smoothing --dataset sst --index 0		# Manifold smoothing
-	python test_bert.py --model oe --dataset sst --index 0						# Outlier Explosure
+	python test_bert.py --model oe --dataset sst --index 0				# Outlier Explosure
 	
 	
 	# ENN
@@ -50,11 +46,29 @@ The necessary packages include:
 	python test_bert_enn.py --dataset sst --path ./result/sst/ENN_AD/9.pt		# ENN with off-manifold adversial examples
 	python test_bert_enn.py --dataset sst --path ./result/sst/ENN_MIX/9.pt		# ENN with Mixture Regularizers
 	
-You can change sst to other datasets: 20news or trec.
+You can change sst to other datasets: 20news or trec.  
+For example: python test_bert_enn.py --dataset 20news --path ./result/20news/ENN_MIX/9.pt
+
+
+3.  To train ENN models from scratch by yourselves:
+
+	# Baselines:
+	
+	python bert.py --model base --dataset sst --seed 0			# maximum softmax scores
+	python bert.py --model mc-dropout --dataset sst --seed 0			# MC-dropout
+	python bert.py --model temperature --dataset sst --seed 0			# temperature scaling
+	python bert.py --model manifold-smoothing --dataset sst --seed 0 --eps_in 0.0001 --eps_out 0.001 --eps_y 0.1		# Manifold smoothing
+	python bert_oe.py --dataset sst --seed 0				# Outlier Explosure
+     
+	# ENN
+	python train_bert_enn.py --dataset 20news --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
+	python train_bert_enn.py --dataset trec --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
+	python train_bert_enn.py --dataset sst --train_batch_size 32 --beta_in 0.01 --beta_oe 1 --beta_off 0.1
+    
 	
 4. We also provide an [example](https://github.com/snowood1/BERT-ENN/blob/main/demo%20result%20figures-final.ipynb) of plotting Figure 3 and Figure 4.
 	
-References:
+Our paper and implmentation are motivated from:
 [1] Outlier Exposure. https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification
 [2] Manifold Calibration. https://github.com/Lingkai-Kong/Calibrated-BERT-Fine-Tuning
 
