@@ -32,19 +32,19 @@ The necessary packages include:
 
  **Baselines**
 	
-	python test_bert.py --model base --dataset sst --index 0			# maximum softmax scores
-	python test_bert.py --model mc-dropout --dataset sst --index 0			# MC-dropout
-	python test_bert.py --model temperature --dataset sst --index 0			# temperature scaling
-	python test_bert.py --model manifold-smoothing --dataset sst --index 0		# Manifold smoothing
-	python test_bert.py --model oe --dataset sst --index 0				# Outlier Explosure
+	python test_bert.py --model base --dataset sst --save_path saved_result --index 0			# maximum softmax scores
+	python test_bert.py --model mc-dropout --dataset sst --save_path saved_result  --index 0			# MC-dropout
+	python test_bert.py --model temperature --dataset sst --save_path saved_result  --index 0			# temperature scaling
+	python test_bert.py --model manifold-smoothing --dataset sst --save_path saved_result  --index 0		# Manifold smoothing
+	python test_bert.py --model oe --dataset sst --save_path saved_result  --index 0				# Outlier Explosure
 	
 	
  **ENN**
 	
-	python test_bert_enn.py --dataset sst --path ./result/sst/ENN_ori/9.pt		# Vanilla ENN
-	python test_bert_enn.py --dataset sst --path ./result/sst/ENN_OE/9.pt		# ENN with Outlier Explosure
-	python test_bert_enn.py --dataset sst --path ./result/sst/ENN_AD/9.pt		# ENN with off-manifold adversial examples
-	python test_bert_enn.py --dataset sst --path ./result/sst/ENN_MIX/9.pt		# ENN with Mixture Regularizers
+	python test_bert_enn.py --dataset sst --path ./saved_result/sst/ENN_ori/9.pt		# Vanilla ENN
+	python test_bert_enn.py --dataset sst --path ./saved_result/sst/ENN_OE/9.pt		# ENN with Outlier Explosure
+	python test_bert_enn.py --dataset sst --path ./saved_result/sst/ENN_AD/9.pt		# ENN with off-manifold adversial examples
+	python test_bert_enn.py --dataset sst --path ./saved_result/sst/ENN_MIX/9.pt		# ENN with Mixture Regularizers
 	
 
 
@@ -68,6 +68,7 @@ The necessary packages include:
 
 4.  To evaluate your trained models, you can follow Step 2 but replace the input checkpoints paths. For example:
 
+		python test_bert.py --model base --dataset sst --save_path model_save --index 0
 		python test_bert_enn.py --dataset sst --path ./model_save/20news/BERT-ENN-w2adv-0-on-0.0-oe-1.0-off-0.1/9.pt
 
 5. We also provide an [example](https://github.com/snowood1/BERT-ENN/blob/main/demo%20result%20figures-final.ipynb) of plotting Figure 3 and Figure 4.
