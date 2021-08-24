@@ -30,7 +30,7 @@ The necessary packages include:
 
 2.  To reproduce results of Table 3 and 4 using the saved checkpoints, run the code below: (You can change sst to 20news or trec.  )
 	
-	### Baselines:
+<!-- 	### Baselines: -->
 	
 	python test_bert.py --model base --dataset sst --index 0			# maximum softmax scores
 	
@@ -43,7 +43,7 @@ The necessary packages include:
 	python test_bert.py --model oe --dataset sst --index 0				# Outlier Explosure
 	
 	
-	### ENN
+<!-- 	### ENN -->
 	
 	python test_bert_enn.py --dataset sst --path ./result/sst/ENN_ori/9.pt		# Vanilla ENN
 	
