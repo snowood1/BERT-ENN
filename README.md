@@ -30,20 +30,27 @@ The necessary packages include:
 
 2.  To reproduce results of Table 3 and 4 using the saved checkpoints, run the code below:
 	
-	# Baselines:
+	### Baselines:
 	
 	python test_bert.py --model base --dataset sst --index 0			# maximum softmax scores
+	
 	python test_bert.py --model mc-dropout --dataset sst --index 0			# MC-dropout
+	
 	python test_bert.py --model temperature --dataset sst --index 0			# temperature scaling
+	
 	python test_bert.py --model manifold-smoothing --dataset sst --index 0		# Manifold smoothing
+	
 	python test_bert.py --model oe --dataset sst --index 0				# Outlier Explosure
 	
 	
-	# ENN
+	### ENN
 	
 	python test_bert_enn.py --dataset sst --path ./result/sst/ENN_ori/9.pt		# Vanilla ENN
+	
 	python test_bert_enn.py --dataset sst --path ./result/sst/ENN_OE/9.pt		# ENN with Outlier Explosure
+	
 	python test_bert_enn.py --dataset sst --path ./result/sst/ENN_AD/9.pt		# ENN with off-manifold adversial examples
+	
 	python test_bert_enn.py --dataset sst --path ./result/sst/ENN_MIX/9.pt		# ENN with Mixture Regularizers
 	
 You can change sst to other datasets: 20news or trec.  
@@ -52,17 +59,23 @@ For example: python test_bert_enn.py --dataset 20news --path ./result/20news/ENN
 
 3.  To train ENN models from scratch by yourselves:
 
-	# Baselines:
+	### Baselines:
 	
 	python bert.py --model base --dataset sst --seed 0			# maximum softmax scores
+	
 	python bert.py --model mc-dropout --dataset sst --seed 0			# MC-dropout
+	
 	python bert.py --model temperature --dataset sst --seed 0			# temperature scaling
+	
 	python bert.py --model manifold-smoothing --dataset sst --seed 0 --eps_in 0.0001 --eps_out 0.001 --eps_y 0.1		# Manifold smoothing
+	
 	python bert_oe.py --dataset sst --seed 0				# Outlier Explosure
      
-	# ENN
+	### ENN
 	python train_bert_enn.py --dataset 20news --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
+	
 	python train_bert_enn.py --dataset trec --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
+	
 	python train_bert_enn.py --dataset sst --train_batch_size 32 --beta_in 0.01 --beta_oe 1 --beta_off 0.1
     
 	
