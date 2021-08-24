@@ -2,9 +2,7 @@
 
 This repository contains the essential code for the paper [Uncertainty-Aware Reliable Text Classification (KDD 2021)](https://dl.acm.org/doi/10.1145/3447548.3467382).
 
-
-## Getting Started
-### Prerequisites:
+## Prerequisites:
 The code is written by Python 3.6 in Linux system. The cuda version is 10.2. 
 The necessary packages include:
 
@@ -21,14 +19,14 @@ The necessary packages include:
 	pandas 
 	keras==2.3.0 
 
+## Quick Start
 
 1. Create folders 'datasets' and 'model_save' to save downloaded datasets and output results.
     
   We follow the same datasets in [Outlier Exposure](https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification).
-  You can also simply download the preprocessed datasets from [here](https://drive.google.com/drive/folders/1wMlKX5_Gfubsant3mtVH_yh2VL_yv06O?usp=sharing)
-  
+  You can also simply download the preprocessed datasets  and saved results from [here](https://drive.google.com/drive/folders/1wMlKX5_Gfubsant3mtVH_yh2VL_yv06O?usp=sharing)
 
-2.  To train ENN models:
+2.  To train ENN models from scratch:
     python train_bert_enn.py --dataset 20news --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
     python train_bert_enn.py --dataset trec --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
     python train_bert_enn.py --dataset sst --train_batch_size 32 --beta_in 0.01 --beta_oe 1 --beta_off 0.1
@@ -54,7 +52,7 @@ The necessary packages include:
 	
 You can change sst to other datasets: 20news or trec.
 	
-We also provide an [example](https://github.com/snowood1/BERT-ENN/blob/main/demo%20result%20figures-final.ipynb) of plotting Figure 3 and Figure 4.
+4. We also provide an [example](https://github.com/snowood1/BERT-ENN/blob/main/demo%20result%20figures-final.ipynb) of plotting Figure 3 and Figure 4.
 	
 References:
 [1] Outlier Exposure. https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification
