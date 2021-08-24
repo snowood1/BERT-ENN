@@ -30,7 +30,7 @@ The necessary packages include:
 
 2.  To reproduce results of Table 3 and 4 using the saved checkpoints, run the code below: (You can change sst to 20news or trec.  )
 	
-**Baselines**
+	**Baselines**
 	
 	python test_bert.py --model base --dataset sst --index 0			# maximum softmax scores
 	python test_bert.py --model mc-dropout --dataset sst --index 0			# MC-dropout
