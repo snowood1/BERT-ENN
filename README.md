@@ -33,7 +33,6 @@ The necessary packages include:
 <!-- 	### Baselines: -->
 	
 	python test_bert.py --model base --dataset sst --index 0			# maximum softmax scores
-	
 	python test_bert.py --model mc-dropout --dataset sst --index 0			# MC-dropout
 	
 	python test_bert.py --model temperature --dataset sst --index 0			# temperature scaling
