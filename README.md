@@ -2,6 +2,10 @@
 
 This repository contains the essential code for the paper [Uncertainty-Aware Reliable Text Classification (KDD 2021)](https://dl.acm.org/doi/10.1145/3447548.3467382).
 
+The paper is to combine evidential uncertainty and BERT for OOD detection tasks in text classification.  
+
+You may also check our previous work [Multidimensional Uncertainty-Aware Evidential Neural Networks (AAAI 2021)](https://github.com/snowood1/wenn) in image classification.
+
 ## Prerequisites
 The code is written by Python 3.6 in Linux system. The cuda version is 10.2. 
 The necessary packages include:
