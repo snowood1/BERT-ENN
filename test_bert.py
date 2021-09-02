@@ -2,7 +2,6 @@ import os
 # os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 from utils import *
 import argparse
-from help.display_results import get_performance
 from models import ModelWithTemperature
 from transformers import BertTokenizer, BertForSequenceClassification
 from keras.preprocessing.sequence import pad_sequences
