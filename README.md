@@ -29,7 +29,7 @@ The necessary packages include:
 	
 	We follow the same datasets in [Outlier Exposure](https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification).
 	
-  	You can also simply download the preprocessed **datasets** and the saved **results** from [here.](https://drive.google.com/drive/folders/1qAoUzQqo-Ys51LFgzvJpAH3fvLP4hhgM?usp=sharing)
+  	You can also simply download the preprocessed **datasets** and the saved **results** [from here.](https://drive.google.com/drive/folders/1qAoUzQqo-Ys51LFgzvJpAH3fvLP4hhgM?usp=sharing)
 
 
 2.  To reproduce results of Table 3 and 4 using the saved checkpoints, run the code below: (You can change sst to 20news or trec.  )
@@ -63,7 +63,7 @@ The necessary packages include:
 	python bert_oe.py --dataset sst --seed 0				# Outlier Explosure
 	
 	
- **ENN**.  See Table 5: Hyper-parameters for BERT-ENNs.
+ **ENN**.  You can use the Hyper-parameters in Table 5.
  
  	python train_bert_enn.py --dataset 20news --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
 	python train_bert_enn.py --dataset trec --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
@@ -72,8 +72,21 @@ The necessary packages include:
 
 4.  To evaluate your trained models, you can follow Step 2 but replace the input checkpoints paths. For example:
 
-		python test_bert.py --model base --dataset sst --save_path model_save --index 0
-		python test_bert_enn.py --dataset sst --path ./model_save/20news/BERT-ENN-w2adv-0-on-0.0-oe-1.0-off-0.1/9.pt
+**Baselines**
+	
+	python test_bert.py --model base --dataset sst --save_path model_save --index 0			# maximum softmax scores
+	python test_bert.py --model mc-dropout --dataset sst --save_path model_save --index 0		# MC-dropout
+	python test_bert.py --model temperature --dataset sst --save_path model_save --index 0		# temperature scaling
+	python test_bert.py --model manifold-smoothing --dataset sst  --save_path model_save --index 0 	# Manifold smoothing
+	python test_bert.py --model oe -dataset sst --save_path model_save --index 0			# Outlier Explosure
+	
+	
+ **ENN**
+ 
+ 	python test_bert_enn.py --dataset 20news --path ./model_save/20news/BERT-ENN-w2adv-0-on-0.0-oe-1.0-off-0.1/9.pt
+	python test_bert_enn.py --dataset trec --path ./model_save/trec/BERT-ENN-w2adv-0-on-0.0-oe-1.0-off-0.1/9.pt
+	python test_bert_enn.py --dataset sst --path ./model_save/sst/BERT-ENN-w2adv-0-on-0.01-oe-1.0-off-0.1/9.pt
+	
 
 5. We also provide an [example](https://github.com/snowood1/BERT-ENN/blob/main/demo%20result%20figures-final.ipynb) of plotting Figure 3 and Figure 4.
 	
