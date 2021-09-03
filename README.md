@@ -15,40 +15,43 @@ The necessary packages include:
 	torchtext==0.8.1
 	transformers==4.1.1 
 	tensorflow-gpu==1.15.0 
-	tqdm 
-	matplotlib 
-	numpy 
-	sklearn 
-	scipy 
-	pandas 
+	tqdm==4.62.2 
+	matplotlib==3.3.4 
+	numpy==1.19.2 
+	scikit-learn==0.24.2
+	scipy==1.4.1 
+	pandas==1.1.5 
 	keras==2.3.0 
 
 ## Quick Start
 
-1. Create folders 'datasets' and 'model_save' to save downloaded datasets and output results.
+1. Create folders 'dataset' and 'model_save' to save downloaded datasets and output results.
 	
-	We follow the same datasets in [Outlier Exposure](https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification).
+	We follow the same datasets in [Outlier Exposure](https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification). 
+  	
+	You can simply download the preprocessed datasets and the saved results [from here.](https://drive.google.com/drive/folders/1qAoUzQqo-Ys51LFgzvJpAH3fvLP4hhgM?usp=sharing)
+	The preprocessing can be reproduced by: 
 	
-  	You can also simply download the preprocessed **datasets** and the saved **results** [from here.](https://drive.google.com/drive/folders/1qAoUzQqo-Ys51LFgzvJpAH3fvLP4hhgM?usp=sharing)
+		python prepare_data.py
 
 
 2.  To reproduce results of Table 3 and 4 using the saved checkpoints, run the code below: (You can change sst to 20news or trec.  )
 
  **Baselines**
 	
-	python test_bert.py --model base --dataset sst --save_path saved_result --index 0			# maximum softmax scores
-	python test_bert.py --model mc-dropout --dataset sst --save_path saved_result  --index 0			# MC-dropout
-	python test_bert.py --model temperature --dataset sst --save_path saved_result  --index 0			# temperature scaling
-	python test_bert.py --model manifold-smoothing --dataset sst --save_path saved_result  --index 0		# Manifold smoothing
-	python test_bert.py --model oe --dataset sst --save_path saved_result  --index 0				# Outlier Explosure
+	CUDA_VISIBLE_DEVICES=0 python test_bert.py --model base --dataset sst --save_path saved_result --index 0		# maximum softmax scores
+	CUDA_VISIBLE_DEVICES=0 python test_bert.py --model mc-dropout --dataset sst --save_path saved_result  --index 0		# MC-dropout
+	CUDA_VISIBLE_DEVICES=0 python test_bert.py --model temperature --dataset sst --save_path saved_result  --index 0	# temperature scaling
+	CUDA_VISIBLE_DEVICES=0 python test_bert.py --model manifold-smoothing --dataset sst --save_path saved_result  --index 0	# Manifold smoothing
+	CUDA_VISIBLE_DEVICES=0 python test_bert.py --model oe --dataset sst --save_path saved_result  --index 0			# Outlier Explosure
 	
 	
  **ENN**
 	
-	python test_bert_enn.py --dataset sst --path ./saved_result/sst/ENN_ori/9.pt		# Vanilla ENN
-	python test_bert_enn.py --dataset sst --path ./saved_result/sst/ENN_OE/9.pt		# ENN with Outlier Explosure
-	python test_bert_enn.py --dataset sst --path ./saved_result/sst/ENN_AD/9.pt		# ENN with off-manifold adversial examples
-	python test_bert_enn.py --dataset sst --path ./saved_result/sst/ENN_MIX/9.pt		# ENN with Mixture Regularizers
+	CUDA_VISIBLE_DEVICES=0 python test_bert_enn.py --dataset sst --path ./saved_result/sst/ENN_ori/9.pt	# Vanilla ENN
+	CUDA_VISIBLE_DEVICES=0 python test_bert_enn.py --dataset sst --path ./saved_result/sst/ENN_OE/9.pt	# ENN with Outlier Explosure
+	CUDA_VISIBLE_DEVICES=0 python test_bert_enn.py --dataset sst --path ./saved_result/sst/ENN_AD/9.pt	# ENN with off-manifold adversial examples
+	CUDA_VISIBLE_DEVICES=0 python test_bert_enn.py --dataset sst --path ./saved_result/sst/ENN_MIX/9.pt	# ENN with Mixture Regularizers
 	
 
 
@@ -56,36 +59,34 @@ The necessary packages include:
 
 **Baselines**
 	
-	python bert.py --model base --dataset sst --seed 0			# maximum softmax scores
-	python bert.py --model mc-dropout --dataset sst --seed 0		# MC-dropout
-	python bert.py --model temperature --dataset sst --seed 0		# temperature scaling
-	python manifold-smoothing.py --dataset sst --seed 0 			# Manifold smoothing
-	python bert_oe.py --dataset sst --seed 0				# Outlier Explosure
+	CUDA_VISIBLE_DEVICES=0 python bert.py --dataset sst --seed 0			# vanilla BERT for maximum softmax scores, MC-dropout and temperature scaling
+	CUDA_VISIBLE_DEVICES=0 python manifold-smoothing.py --dataset sst --seed 0 	# Manifold smoothing
+	CUDA_VISIBLE_DEVICES=0 python bert_oe.py --dataset sst --seed 0			# Outlier Explosure
 	
 	
- **ENN**.  You can use the Hyper-parameters in Table 5.
+ **ENN**.  Below we use the Hyper-parameters in Table 5.
  
- 	python train_bert_enn.py --dataset 20news --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
-	python train_bert_enn.py --dataset trec --train_batch_size 32 --beta_in 0 --beta_oe 1 --beta_off 0.1
-	python train_bert_enn.py --dataset sst --train_batch_size 32 --beta_in 0.01 --beta_oe 1 --beta_off 0.1
+ 	CUDA_VISIBLE_DEVICES=0 python train_bert_enn.py --dataset 20news --beta_in 0 --beta_oe 1 --beta_off 0.1
+	CUDA_VISIBLE_DEVICES=0 python train_bert_enn.py --dataset trec --beta_in 0 --beta_oe 1 --beta_off 0.1
+	CUDA_VISIBLE_DEVICES=0 python train_bert_enn.py --dataset sst --beta_in 0.01 --beta_oe 1 --beta_off 0.1
 
 
 4.  To evaluate your trained models, you can follow Step 2 but replace the input checkpoints paths. For example:
 
 **Baselines**
 	
-	python test_bert.py --model base --dataset sst --save_path model_save --index 0			# maximum softmax scores
-	python test_bert.py --model mc-dropout --dataset sst --save_path model_save --index 0		# MC-dropout
-	python test_bert.py --model temperature --dataset sst --save_path model_save --index 0		# temperature scaling
-	python test_bert.py --model manifold-smoothing --dataset sst  --save_path model_save --index 0 	# Manifold smoothing
-	python test_bert.py --model oe -dataset sst --save_path model_save --index 0			# Outlier Explosure
+	CUDA_VISIBLE_DEVICES=0 python test_bert.py --model base --dataset sst --save_path model_save --index 0			# maximum softmax scores
+	CUDA_VISIBLE_DEVICES=0 python test_bert.py --model mc-dropout --dataset sst --save_path model_save --index 0		# MC-dropout
+	CUDA_VISIBLE_DEVICES=0 python test_bert.py --model temperature --dataset sst --save_path model_save --index 0		# temperature scaling
+	CUDA_VISIBLE_DEVICES=0 python test_bert.py --model manifold-smoothing --dataset sst  --save_path model_save --index 0 	# Manifold smoothing
+	CUDA_VISIBLE_DEVICES=0 python test_bert.py --model oe -dataset sst --save_path model_save --index 0			# Outlier Explosure
 	
 	
  **ENN**
  
- 	python test_bert_enn.py --dataset 20news --path ./model_save/20news/BERT-ENN-w2adv-0-on-0.0-oe-1.0-off-0.1/9.pt
-	python test_bert_enn.py --dataset trec --path ./model_save/trec/BERT-ENN-w2adv-0-on-0.0-oe-1.0-off-0.1/9.pt
-	python test_bert_enn.py --dataset sst --path ./model_save/sst/BERT-ENN-w2adv-0-on-0.01-oe-1.0-off-0.1/9.pt
+ 	CUDA_VISIBLE_DEVICES=0 python test_bert_enn.py --dataset 20news --path ./model_save/20news/BERT-ENN-w2adv-0-on-0.0-oe-1.0-off-0.1/9.pt
+	CUDA_VISIBLE_DEVICES=0 python test_bert_enn.py --dataset trec --path ./model_save/trec/BERT-ENN-w2adv-0-on-0.0-oe-1.0-off-0.1/9.pt
+	CUDA_VISIBLE_DEVICES=0 python test_bert_enn.py --dataset sst --path ./model_save/sst/BERT-ENN-w2adv-0-on-0.01-oe-1.0-off-0.1/9.pt
 	
 
 5. We also provide an [example](https://github.com/snowood1/BERT-ENN/blob/main/demo%20result%20figures-final.ipynb) of plotting Figure 3 and Figure 4.
