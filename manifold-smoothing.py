@@ -3,23 +3,19 @@
 import os
 # os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
-import torch
 from torch import nn
 from torch.nn import functional as F
-from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
+from torch.utils.data import TensorDataset, RandomSampler
 from keras.preprocessing.sequence import pad_sequences
-from sklearn.model_selection import train_test_split
-from transformers  import BertTokenizer, BertConfig
-from transformers  import AdamW, BertForSequenceClassification, get_linear_schedule_with_warmup
-from tqdm import tqdm, trange
-import pandas as pd
-import io
-import numpy as np
-import matplotlib.pyplot as plt
+from transformers  import BertTokenizer, BertForSequenceClassification
+from tqdm import trange
 from torch.autograd.gradcheck import zero_gradients
-import argparse
 import random
-from utils import *
+import numpy as np
+import torch
+from torch.utils.data import DataLoader, SequentialSampler
+import argparse
+from utils import set_seed, load_dataset, cos_dist
 
 import warnings
 # warnings.filterwarnings('ignore')
@@ -205,7 +201,7 @@ def main():
     on_manifold = on_manifold_samples(epsilon_x=args.eps_in, epsilon_y=args.eps_y)
     off_manifold = off_manifold_samples(eps=args.eps_out)
 
-     
+
     # load dataset
     if args.saved_dataset == 'n':
         train_sentences, val_sentences, test_sentences, train_labels, val_labels, test_labels = load_dataset(args.dataset)
@@ -239,12 +235,12 @@ def main():
                         )
         # Add the encoded sentence to the list.
             train_input_ids.append(encoded_sent)
-            
+
 
         for sent in val_sentences:
             encoded_sent = tokenizer.encode(
-                                sent,                    
-                                add_special_tokens = True, 
+                                sent,
+                                add_special_tokens = True,
                                 max_length = MAX_LEN,
                                 truncation=True
                         )
@@ -252,8 +248,8 @@ def main():
 
         for sent in test_sentences:
             encoded_sent = tokenizer.encode(
-                                sent,                     
-                                add_special_tokens = True, 
+                                sent,
+                                add_special_tokens = True,
                                 max_length = MAX_LEN,
                                 truncation=True
                         )
@@ -291,16 +287,16 @@ def main():
         test_labels = torch.tensor(test_labels)
         test_masks = torch.tensor(test_attention_masks)
 
-        # Create an iterator of our data with torch DataLoader. 
+        # Create an iterator of our data with torch DataLoader.
 
         train_data = TensorDataset(train_inputs, train_masks, train_labels)
         validation_data = TensorDataset(validation_inputs, validation_masks, validation_labels)
         prediction_data = TensorDataset(test_inputs, test_masks, test_labels)
-        
+
         dataset_dir = 'dataset/{}'.format(args.dataset)
         if not os.path.exists(dataset_dir):
             os.makedirs(dataset_dir)
-            
+
         torch.save(train_data, dataset_dir+'/train.pt')
         torch.save(validation_data, dataset_dir+'/val.pt')
         torch.save(prediction_data, dataset_dir+'/test.pt')
@@ -452,7 +448,7 @@ def main():
 
         if eval_accuracy > best_val:
 #             dirname = '{}/BERT-mf-{}-{}-{}-{}'.format(args.dataset, args.seed, args.eps_in, args.eps_y, args.eps_out)
-            dirname = '{}/BERT-manifold-smoothing-{}'.format(args.dataset, args.index)
+            dirname = '{}/BERT-manifold-smoothing-{}'.format(args.dataset, args.seed)
             output_dir = './model_save/{}'.format(dirname)
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)

@@ -1,12 +1,12 @@
 import os
-# os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-from utils import *
+# os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+import torch
+from torch.nn import functional as F
+from torch.utils.data import DataLoader, SequentialSampler
+from transformers import BertForSequenceClassification
 import argparse
+from utils import set_seed, cal_entropy, get_performance, apply_dropout
 from models import ModelWithTemperature
-from transformers import BertTokenizer, BertForSequenceClassification
-from keras.preprocessing.sequence import pad_sequences
-from torch.utils.data import TensorDataset, DataLoader, SequentialSampler
-import torch.nn.functional as F
 import pickle
 import warnings
 warnings.filterwarnings("ignore")
@@ -40,21 +40,13 @@ def main():
     args.device = device
     set_seed(args)
 
-    if args.model == 'base':
+    if args.model in ['base', 'mc-dropout']:
         dirname = '{}/BERT-base-{}'.format(args.dataset, args.index)
         pretrained_dir = './{}/{}'.format(args.save_path, dirname)
         model = BertForSequenceClassification.from_pretrained(pretrained_dir)
         model.to(args.device)
-        print('Load Tekenizer')
 
-    elif args.model == 'mc-dropout':
-        dirname = '{}/BERT-base-{}'.format(args.dataset, args.index)
-        pretrained_dir = './{}/{}'.format(args.save_path, dirname)
-        # Load a trained model and vocabulary that you have fine-tuned
-        model = BertForSequenceClassification.from_pretrained(pretrained_dir)
-        model.to(args.device)
-
-    elif args.model == 'temperature':
+    if args.model == 'temperature':
         dirname = '{}/BERT-base-{}'.format(args.dataset, args.index)
         pretrained_dir = './{}/{}'.format(args.save_path, dirname)
         orig_model = BertForSequenceClassification.from_pretrained(pretrained_dir)
@@ -73,78 +65,22 @@ def main():
         pretrained_dir = './{}/{}'.format(args.save_path, dirname)
         model = BertForSequenceClassification.from_pretrained(pretrained_dir)
         model.to(args.device)
-        print('Load Tekenizer')
 
-    print(args.model,  dirname)
+    print('Model: %s\t dir: %s'%(args.model,  dirname))
 
-    if args.saved_dataset == 'n':
-        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
-        train_sentences, val_sentences, test_sentences, train_labels, val_labels, test_labels = load_dataset(
-            args.dataset)
-        _, _, nt_test_sentences, _, _, nt_test_labels = load_dataset(args.out_dataset)
-
-        val_input_ids = []
-        test_input_ids = []
-
-        for sent in val_sentences:
-            encoded_sent = tokenizer.encode(
-                sent,  # Sentence to encode.
-                add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
-                truncation=True,
-                max_length=args.MAX_LEN,  # Truncate all sentences.
-            )
-            # Add the encoded sentence to the list.
-            val_input_ids.append(encoded_sent)
-
-        for sent in test_sentences:
-            encoded_sent = tokenizer.encode(
-                sent,  # Sentence to encode.
-                add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
-                truncation=True,
-                max_length=args.MAX_LEN,  # Truncate all sentences.
-            )
-            # Add the encoded sentence to the list.
-            test_input_ids.append(encoded_sent)
-
-        # Pad our input tokens
-        val_input_ids = pad_sequences(val_input_ids, maxlen=args.MAX_LEN, dtype="long", truncating="post", padding="post")
-        test_input_ids = pad_sequences(test_input_ids, maxlen=args.MAX_LEN, dtype="long", truncating="post", padding="post")
-
-        val_attention_masks = []
-        test_attention_masks = []
-
-        for seq in val_input_ids:
-            seq_mask = [float(i > 0) for i in seq]
-            val_attention_masks.append(seq_mask)
-        for seq in test_input_ids:
-            seq_mask = [float(i > 0) for i in seq]
-            test_attention_masks.append(seq_mask)
-
-        val_inputs = torch.tensor(val_input_ids)
-        val_labels = torch.tensor(val_labels)
-        val_masks = torch.tensor(val_attention_masks)
-
-        test_inputs = torch.tensor(test_input_ids)
-        test_labels = torch.tensor(test_labels)
-        test_masks = torch.tensor(test_attention_masks)
-
-        val_data = TensorDataset(val_inputs, val_masks, val_labels)
-        test_data = TensorDataset(test_inputs, test_masks, test_labels)
-
-        dataset_dir = 'dataset/test'
-        if not os.path.exists(dataset_dir):
-            os.makedirs(dataset_dir)
-        torch.save(val_data, dataset_dir + '/{}_val_in_domain.pt'.format(args.dataset))
-        torch.save(test_data, dataset_dir + '/{}_test_in_domain.pt'.format(args.dataset))
-        # torch.save(nt_test_data, dataset_dir + '/{}_{}_test_out_of_domain.pt'.format(args.dataset, args.out_dataset))
-
+    if args.evaluate_benchmark == 'y':
+        ood_list = ['snli', 'imdb', 'multi30k', 'wmt16', 'yelp']
     else:
-        dataset_dir = 'dataset/test'
-        val_data = torch.load(dataset_dir + '/{}_val_in_domain.pt'.format(args.dataset))
-        test_data = torch.load(dataset_dir + '/{}_test_in_domain.pt'.format(args.dataset))
-        # nt_test_data = torch.load(dataset_dir + '/{}_{}_test_out_of_domain.pt'.format(args.dataset, args.out_dataset))
+        ood_list = [args.out_dataset]
+    print('ood_datasets: %s\n\n' %ood_list )
 
-    ######## saved dataset
+
+    print('Loading saved dataset checkpoints for testing...')
+    dataset_dir = 'dataset/test'
+    val_data = torch.load(dataset_dir + '/{}_val_in_domain.pt'.format(args.dataset))
+    test_data = torch.load(dataset_dir + '/{}_test_in_domain.pt'.format(args.dataset))
+
+
     test_sampler = SequentialSampler(test_data)
     test_dataloader = DataLoader(test_data, sampler=test_sampler, batch_size=args.eval_batch_size)
 
@@ -255,12 +191,9 @@ def main():
 
     report_result = []
 
-    if args.evaluate_benchmark == 'y':
-        ood_list = ['snli','imdb', 'multi30k', 'wmt16', 'yelp' ]
-    else:
-        ood_list = [args.out_dataset]
 
     for ood_dataset in ood_list:
+        print('Evaluate on %s ...'% ood_dataset)
 
         # nt_test_data = torch.load(dataset_dir + '/{}_{}_test_out_of_domain.pt'.format(args.dataset, ood_dataset))
         nt_test_data = torch.load(dataset_dir + '/{}_test_out_of_domain.pt'.format(ood_dataset))
@@ -301,18 +234,11 @@ def main():
         ent_ood_array = ent_ood_array.cpu().numpy()
 
 
-        #######
-
-
-        true_o = np.ones(len(score_in_array) + len(score_ood_array))
-        true_o[:len(score_in_array)] = 0
-        true_mis = np.ones(len(score_in_array))
-        true_mis[correct_array] = 0
-
         expected_ap = len(score_ood_array) / (len(score_in_array) + len(score_ood_array))
 
         ood_dect_scores = get_performance(-score_ood_array, -score_in_array, expected_ap, recall_level= RECALL_LEVEL)
-        print('\n\nOOD detection, \t\t FPR{:d}: {:.4f},\t AUROC: {:.4f}\t AUPR: {:.4f} '.format(int(100 * RECALL_LEVEL),
+        print('OOD detection, \t{}\t\t FPR{:d}: {:.4f},\t AUROC: {:.4f}\t AUPR: {:.4f} '.format(ood_dataset,
+                                                                        int(100 * RECALL_LEVEL),
                                                                         ood_dect_scores[0],
                                                                         ood_dect_scores[1],
                                                                         ood_dect_scores[2]))
@@ -320,35 +246,38 @@ def main():
         report_result.append([ood_dect_scores[0],ood_dect_scores[1],ood_dect_scores[2]])
 
 
+    ####### In distribution ######
 
-        score_in_succ =  score_in_array[correct_array]
-        score_in_fail =  score_in_array[~correct_array]
+    score_in_succ =  score_in_array[correct_array]
+    score_in_fail =  score_in_array[~correct_array]
 
-        expected_ap = len(score_in_fail) / (len(score_in_succ) + len(score_in_fail))
-        mis_dect_scores = get_performance(-score_in_fail, -score_in_succ, expected_ap, recall_level= RECALL_LEVEL)
-        print('misclassification detection,\tFPR{:d}: {:.4f},\t AUROC: {:.4f}\t AUPR: {:.4f} '.format(int(100 * RECALL_LEVEL),
-                                                                        mis_dect_scores[0],
-                                                                        mis_dect_scores[1],
-                                                                        mis_dect_scores[2]))
+    expected_ap = len(score_in_fail) / (len(score_in_succ) + len(score_in_fail))
+    mis_dect_scores = get_performance(-score_in_fail, -score_in_succ, expected_ap, recall_level= RECALL_LEVEL)
+    print('misclassification detection,\tFPR{:d}: {:.4f},\t AUROC: {:.4f}\t AUPR: {:.4f} '.format(int(100 * RECALL_LEVEL),
+                                                                    mis_dect_scores[0],
+                                                                    mis_dect_scores[1],
+                                                                    mis_dect_scores[2]))
 
-        if args.save_result == 'y':
-            result = {}
-            result['ood_msp'] = score_ood_array
-            result['in_msp'] = score_in_array
+    if args.save_result == 'y':
+        result = {}
+        result['ood_msp'] = score_ood_array
+        result['in_msp'] = score_in_array
 
-            result['succ_msp'] = score_in_succ
-            result['fail_msp']= score_in_fail
+        result['succ_msp'] = score_in_succ
+        result['fail_msp']= score_in_fail
 
-            result['in_ent'] = ent_in_array
-            result['ood_ent']= ent_ood_array
+        result['in_ent'] = ent_in_array
+        result['ood_ent']= ent_ood_array
 
-            result['succ_ent'] = ent_succ_array
-            result['fail_ent'] =  ent_fail_array
+        result['succ_ent'] = ent_succ_array
+        result['fail_ent'] =  ent_fail_array
 
-            print('save to/%s_%s_result.pt'%(args.model,ood_dataset))
+        target_path = pretrained_dir + '/%s_%s_result.pt' % (args.model, ood_dataset)
 
-            with open(pretrained_dir + '/%s_%s_result.pt'%(args.model,ood_dataset), 'wb') as file:
-                pickle.dump(result , file)
+        print('save to %s'%target_path)
+
+        with open(target_path, 'wb') as file:
+            pickle.dump(result , file)
 
 if __name__ == "__main__":
     main()

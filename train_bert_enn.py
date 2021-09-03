@@ -1,11 +1,12 @@
 import os
-from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
-from keras.preprocessing.sequence import pad_sequences
-
-from transformers import BertTokenizer
+# os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+import numpy as np
+import torch
+from torch import nn
+from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 import pickle
 import argparse
-from utils import *
+from utils import set_seed, accurate_nb, one_hot_tensor, cal_entropy, getDisn, get_performance, get_pr_roc
 from models import BERT_ENN, off_manifold_samples
 import pandas as pd
 pd.options.display.float_format = lambda x: '{:.0f}'.format(x) if round(x, 0) == x else '{:.3f}'.format(x)
@@ -30,8 +31,6 @@ def main():
     parser.add_argument("--beta_off", default=0.1, type=float, help="Weight of off manifold reg")
     parser.add_argument('--eps_out', default=0.01, type=float,
                         help="Perturbation size of out-of-domain adversarial training")
-    parser.add_argument('--saved_dataset', type=str, default='y',  choices = ['y','n'],
-                        help='whether save the preprocessed pt file of the dataset')
     parser.add_argument('--warm_up', type=int, default=2,
                         help='warn up epochs')
     parser.add_argument('--grad_clip', type=float, default=1)
@@ -61,96 +60,11 @@ def main():
         print('Train  BERT-ENN',  file=file)
         print(record, file=file)
 
-    # load dataset
-    if args.saved_dataset == 'n':
-        train_sentences, val_sentences, test_sentences, train_labels, val_labels, test_labels = load_dataset(
-            args.dataset)
-
-        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
-
-        train_input_ids = []
-        val_input_ids = []
-        test_input_ids = []
-
-        for sent in train_sentences:
-            encoded_sent = tokenizer.encode(
-                sent,  
-                add_special_tokens=True, 
-                max_length=args.MAX_LEN,
-                truncation=True
-            )
-            train_input_ids.append(encoded_sent)
-
-        for sent in val_sentences:
-            encoded_sent = tokenizer.encode(
-                sent,
-                add_special_tokens=True,
-                max_length=args.MAX_LEN,
-                truncation=True
-            )
-            val_input_ids.append(encoded_sent)
-
-        for sent in test_sentences:
-            encoded_sent = tokenizer.encode(
-                sent,
-                add_special_tokens=True,
-                max_length=args.MAX_LEN,
-                truncation=True
-            )
-            test_input_ids.append(encoded_sent)
-
-        # Pad our input tokens
-        train_input_ids = pad_sequences(train_input_ids, maxlen=args.MAX_LEN, dtype="long", truncating="post",
-                                        padding="post")
-        val_input_ids = pad_sequences(val_input_ids, maxlen=args.MAX_LEN, dtype="long", truncating="post", padding="post")
-        test_input_ids = pad_sequences(test_input_ids, maxlen=args.MAX_LEN, dtype="long", truncating="post", padding="post")
-        # Create attention masks
-        train_attention_masks = []
-        val_attention_masks = []
-        test_attention_masks = []
-
-        # Create a mask of 1s for each token followed by 0s for padding
-        for seq in train_input_ids:
-            seq_mask = [float(i > 0) for i in seq]
-            train_attention_masks.append(seq_mask)
-        for seq in val_input_ids:
-            seq_mask = [float(i > 0) for i in seq]
-            val_attention_masks.append(seq_mask)
-        for seq in test_input_ids:
-            seq_mask = [float(i > 0) for i in seq]
-            test_attention_masks.append(seq_mask)
-
-        # Convert all of our data into torch tensors, the required datatype for our model
-
-        train_inputs = torch.tensor(train_input_ids)
-        validation_inputs = torch.tensor(val_input_ids)
-        train_labels = torch.tensor(train_labels)
-        validation_labels = torch.tensor(val_labels)
-        train_masks = torch.tensor(train_attention_masks)
-        validation_masks = torch.tensor(val_attention_masks)
-        test_inputs = torch.tensor(test_input_ids)
-        test_labels = torch.tensor(test_labels)
-        test_masks = torch.tensor(test_attention_masks)
-
-        # Create an iterator of our data with torch DataLoader.
-
-        train_data = TensorDataset(train_inputs, train_masks, train_labels)
-        validation_data = TensorDataset(validation_inputs, validation_masks, validation_labels)
-        prediction_data = TensorDataset(test_inputs, test_masks, test_labels)
-
-        dataset_dir = 'dataset/{}'.format(args.dataset)
-        if not os.path.exists(dataset_dir):
-            os.makedirs(dataset_dir)
-
-        torch.save(train_data, dataset_dir + '/train.pt')
-        torch.save(validation_data, dataset_dir + '/val.pt')
-        torch.save(prediction_data, dataset_dir + '/test.pt')
-
-    else:
-        dataset_dir = 'dataset/{}'.format(args.dataset)
-        train_data = torch.load(dataset_dir + '/train.pt')
-        validation_data = torch.load(dataset_dir + '/val.pt')
-        prediction_data = torch.load(dataset_dir + '/test.pt')
+    print('Loading saved dataset checkpoints for training...')
+    dataset_dir = 'dataset/{}'.format(args.dataset)
+    train_data = torch.load(dataset_dir + '/train.pt')
+    validation_data = torch.load(dataset_dir + '/val.pt')
+    prediction_data = torch.load(dataset_dir + '/test.pt')
 
     train_sampler = RandomSampler(train_data)
     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size)
@@ -161,11 +75,9 @@ def main():
     prediction_sampler = SequentialSampler(prediction_data)
     prediction_dataloader = DataLoader(prediction_data, sampler=prediction_sampler, batch_size=args.eval_batch_size)
 
-
-    ood_data = torch.load('dataset/test/wikitext2.pt')
+    ood_data = torch.load('dataset/wikitext2.pt')
     ood_dataloader = DataLoader(ood_data, batch_size=args.train_batch_size, shuffle=True)
 
-    # Todo
     nt_test_data = torch.load('dataset/test/{}_test_out_of_domain.pt'.format(args.out_dataset))
     nt_test_sampler = SequentialSampler(nt_test_data)
     nt_test_dataloader = DataLoader(nt_test_data, sampler=nt_test_sampler, batch_size=args.eval_batch_size)

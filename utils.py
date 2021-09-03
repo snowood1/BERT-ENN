@@ -5,7 +5,6 @@ import random
 import torch
 import torch.utils.data
 from torch import nn
-from torchvision import datasets, transforms
 
 import torchtext.data
 import torchtext.datasets
@@ -16,6 +15,14 @@ from sklearn.model_selection import train_test_split
 
 
 def load_dataset(dataset):
+
+    train_sentences = None
+    val_sentences = None
+    test_sentences = None
+    train_labels = None
+    val_labels = None
+    test_labels = None
+
     ##  Training Datasets: 20news, trec, sst  ##
 
     if dataset == '20news':
@@ -43,7 +50,7 @@ def load_dataset(dataset):
         LABEL = torchtext.data.Field(sequential=False)
 
         # make splits for data
-        train, test = datasets.TREC.splits(TEXT, LABEL, fine_grained=True)
+        train, test = torchtext.datasets.TREC.splits(TEXT, LABEL, fine_grained=True)
 
         train_text = []
         train_label = []
@@ -82,7 +89,7 @@ def load_dataset(dataset):
     if dataset == 'sst':
         df_train = pd.read_csv("./dataset/sst/SST-2/train.tsv", delimiter='\t', header=0)
 
-        df_train = df_train.groupby('label').sample(5000)
+        df_train = df_train.groupby('label').sample(10000)
 
         df_val = pd.read_csv("./dataset/sst/SST-2/dev.tsv", delimiter='\t', header=0)
 
@@ -99,7 +106,7 @@ def load_dataset(dataset):
     ##  Training OOD dataset ##
 
     if dataset == 'wikitext2':
-        file_path = './dataset/wikitext2_sentences'
+        file_path = './dataset/wikitext_reformatted/wikitext2_sentences'
         with open(file_path, 'r') as read_file:
             x_temp = read_file.readlines()
             x_all = []
@@ -122,7 +129,7 @@ def load_dataset(dataset):
         TEXT_snli = torchtext.data.Field(pad_first=True, lower=True)
         LABEL_snli = torchtext.data.Field(sequential=False)
 
-        train_snli, val_snli, test_snli = datasets.SNLI.splits(TEXT_snli, LABEL_snli)
+        train_snli, val_snli, test_snli = torchtext.datasets.SNLI.splits(TEXT_snli, LABEL_snli)
         all_labels = []
         all_hypotheis = []
         for example in test_snli.examples:
@@ -159,7 +166,7 @@ def load_dataset(dataset):
     ###  3. Multi30K #
     if dataset == 'multi30k':
         TEXT_m30k = torchtext.data.Field(pad_first=True, lower=True)
-        m30k_data = torchtext.data.TabularDataset(path='./data/multi30k/train.txt',
+        m30k_data = torchtext.data.TabularDataset(path='./dataset/multi30k/train.txt',
                                         format='csv', fields=[('text', TEXT_m30k)])
 
         all_text = []
@@ -180,7 +187,7 @@ def load_dataset(dataset):
     ###  4. WMT16  #
     if dataset == 'wmt16':
         TEXT_wmt16 = torchtext.data.Field(pad_first=True, lower=True)
-        wmt16_data = torchtext.data.TabularDataset(path='./data/wmt16/wmt16_sentences',
+        wmt16_data = torchtext.data.TabularDataset(path='./dataset/wmt16/wmt16_sentences',
                                          format='csv', fields=[('text', TEXT_wmt16)])
 
         all_text = []
@@ -200,7 +207,7 @@ def load_dataset(dataset):
 
     ###  5. Yelp Reviews #
     if dataset == 'yelp':
-        df = pd.read_csv('./data/yelp_review_full_csv/test.csv', delimiter=',', header=None)
+        df = pd.read_csv('./dataset/yelp_review_full_csv/test.csv', delimiter=',', header=None)
         train_sentences = None
         val_sentences = None
         test_sentences = df.iloc[:, 1]

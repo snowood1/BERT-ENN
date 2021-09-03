@@ -1,12 +1,13 @@
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-from utils import *
-from models import BERT_ENN
-from torch.utils.data import TensorDataset, DataLoader, SequentialSampler
-from keras.preprocessing.sequence import pad_sequences
-from transformers import BertTokenizer
+# os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+
+import numpy as np
+import torch
+from torch.utils.data import DataLoader, SequentialSampler
 import pickle
 import argparse
+from utils import set_seed, cal_entropy, getDisn, get_performance, get_pr_roc
+from models import BERT_ENN
 import pandas as pd
 pd.options.display.float_format = lambda x: '{:.0f}'.format(x) if round(x, 0) == x else '{:.3f}'.format(x)
 pd.options.display.max_columns = 20
@@ -18,7 +19,6 @@ def main():
     parser.add_argument("--seed", default=0, type=int, help="Number of epochs for training.")
     parser.add_argument("--dataset", default='sst', type=str, help="dataset", choices= ['20news','trec','sst'])
     parser.add_argument('--path', type=str, default=None)
-    parser.add_argument('--saved_dataset', type=str, default='y', choices = ['y','n'])
     parser.add_argument('--save_result', type=str, default='n', choices= ['y','n'])
     parser.add_argument('--evaluate_benchmark', type=str, default='y')
     parser.add_argument('--MAX_LEN', type=int, default=150)
@@ -47,72 +47,11 @@ def main():
     record = vars(args)
     print(record)
 
-    if args.saved_dataset == 'n':
-        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
-        train_sentences, val_sentences, test_sentences, train_labels, val_labels, test_labels = load_dataset(
-            args.dataset)
-        _, _, nt_test_sentences, _, _, nt_test_labels = load_dataset(args.out_dataset)
 
-        val_input_ids = []
-        test_input_ids = []
-        # nt_test_input_ids = []
-
-        for sent in val_sentences:
-            encoded_sent = tokenizer.encode(
-                sent,  # Sentence to encode.
-                add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
-                truncation=True,
-                max_length=args.MAX_LEN,  # Truncate all sentences.
-            )
-            # Add the encoded sentence to the list.
-            val_input_ids.append(encoded_sent)
-
-        for sent in test_sentences:
-            encoded_sent = tokenizer.encode(
-                sent,  # Sentence to encode.
-                add_special_tokens=True,  # Add '[CLS]' and '[SEP]'
-                truncation=True,
-                max_length=args.MAX_LEN,  # Truncate all sentences.
-            )
-            # Add the encoded sentence to the list.
-            test_input_ids.append(encoded_sent)
-
-        # Pad our input tokens
-        val_input_ids = pad_sequences(val_input_ids, maxlen=args.MAX_LEN, dtype="long", truncating="post", padding="post")
-        test_input_ids = pad_sequences(test_input_ids, maxlen=args.MAX_LEN, dtype="long", truncating="post", padding="post")
-
-        val_attention_masks = []
-        test_attention_masks = []
-
-        for seq in val_input_ids:
-            seq_mask = [float(i > 0) for i in seq]
-            val_attention_masks.append(seq_mask)
-        for seq in test_input_ids:
-            seq_mask = [float(i > 0) for i in seq]
-            test_attention_masks.append(seq_mask)
-
-        val_inputs = torch.tensor(val_input_ids)
-        val_labels = torch.tensor(val_labels)
-        val_masks = torch.tensor(val_attention_masks)
-
-        test_inputs = torch.tensor(test_input_ids)
-        test_labels = torch.tensor(test_labels)
-        test_masks = torch.tensor(test_attention_masks)
-
-        val_data = TensorDataset(val_inputs, val_masks, val_labels)
-        test_data = TensorDataset(test_inputs, test_masks, test_labels)
-
-        dataset_dir = 'dataset/test'
-        if not os.path.exists(dataset_dir):
-            os.makedirs(dataset_dir)
-        torch.save(val_data, dataset_dir + '/{}_val_in_domain.pt'.format(args.dataset))
-        torch.save(test_data, dataset_dir + '/{}_test_in_domain.pt'.format(args.dataset))
-        # torch.save(nt_test_data, dataset_dir + '/{}_{}_test_out_of_domain.pt'.format(args.dataset, args.out_dataset))
-
-    else:
-        dataset_dir = 'dataset/test'
-        val_data = torch.load(dataset_dir + '/{}_val_in_domain.pt'.format(args.dataset))
-        test_data = torch.load(dataset_dir + '/{}_test_in_domain.pt'.format(args.dataset))
+    print('Loading saved dataset checkpoints for testing...')
+    dataset_dir = 'dataset/test'
+    val_data = torch.load(dataset_dir + '/{}_val_in_domain.pt'.format(args.dataset))
+    test_data = torch.load(dataset_dir + '/{}_test_in_domain.pt'.format(args.dataset))
 
     ######## saved dataset
     test_sampler = SequentialSampler(test_data)

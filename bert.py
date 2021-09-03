@@ -1,21 +1,12 @@
+import os
+# os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 import torch
 from torch import nn
-from torch.nn import functional as F
-from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
-from keras.preprocessing.sequence import pad_sequences
-from sklearn.model_selection import train_test_split
-from transformers  import BertTokenizer, BertConfig
-from transformers  import AdamW, BertForSequenceClassification, get_linear_schedule_with_warmup
-from tqdm import tqdm, trange
-import pandas as pd
-import io
-import numpy as np
-import matplotlib.pyplot as plt
-from torch.autograd.gradcheck import zero_gradients
+from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
+from transformers  import BertForSequenceClassification
+from tqdm import trange
 import argparse
-import random
-from utils import *
-import os 
+from utils import set_seed, accurate_nb
 
 
 
@@ -29,7 +20,6 @@ def main():
     parser.add_argument("--dataset", default='trec', type=str, help="dataset", choices = ['20news','trec','sst'])
     parser.add_argument("--MAX_LEN", default=150, type=int)
     parser.add_argument("--weight_decay", default=0.0, type=float, help="Weight decay if we apply some.")
-    parser.add_argument('--saved_dataset', type=str, default='y', help='whether save the preprocessed pt file of the dataset')  # 'n'
 
     args = parser.parse_args()
     print(args)
@@ -37,95 +27,11 @@ def main():
     args.device = device
     set_seed(args)
 
-    # load dataset
-    if args.saved_dataset == 'n':
-        train_sentences, val_sentences, test_sentences, train_labels, val_labels, test_labels = load_dataset(args.dataset)
-
-        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
-
-        train_input_ids = []
-        val_input_ids = []
-        test_input_ids = []
-
-        for sent in train_sentences:
-
-            encoded_sent = tokenizer.encode(
-                                sent,
-                                add_special_tokens = True,
-                                max_length = args.MAX_LEN,
-                truncation=True)
-        # Add the encoded sentence to the list.
-            train_input_ids.append(encoded_sent)
-
-        for sent in val_sentences:
-            encoded_sent = tokenizer.encode(
-                                sent,                    
-                                add_special_tokens = True, 
-                                max_length = args.MAX_LEN,
-                truncation=True
-                        )
-            val_input_ids.append(encoded_sent)
-
-        for sent in test_sentences:
-            encoded_sent = tokenizer.encode(
-                                sent,                     
-                                add_special_tokens = True, 
-                                max_length = args.MAX_LEN,
-                truncation=True
-                        )
-            test_input_ids.append(encoded_sent)
-
-        # Pad our input tokens
-        train_input_ids = pad_sequences(train_input_ids, maxlen=args.MAX_LEN, dtype="long", truncating="post", padding="post")
-        val_input_ids = pad_sequences(val_input_ids, maxlen=args.MAX_LEN, dtype="long", truncating="post", padding="post")
-        test_input_ids = pad_sequences(test_input_ids, maxlen=args.MAX_LEN, dtype="long", truncating="post", padding="post")
-        # Create attention masks
-        train_attention_masks = []
-        val_attention_masks = []
-        test_attention_masks = []
-
-        # Create a mask of 1s for each token followed by 0s for padding
-        for seq in train_input_ids:
-            seq_mask = [float(i>0) for i in seq]
-            train_attention_masks.append(seq_mask)
-        for seq in val_input_ids:
-            seq_mask = [float(i>0) for i in seq]
-            val_attention_masks.append(seq_mask)
-        for seq in test_input_ids:
-            seq_mask = [float(i>0) for i in seq]
-            test_attention_masks.append(seq_mask)
-
-        # Convert all of our data into torch tensors, the required datatype for our model
-
-        train_inputs = torch.tensor(train_input_ids)
-        validation_inputs = torch.tensor(val_input_ids)
-        train_labels = torch.tensor(train_labels)
-        validation_labels = torch.tensor(val_labels)
-        train_masks = torch.tensor(train_attention_masks)
-        validation_masks = torch.tensor(val_attention_masks)
-        test_inputs = torch.tensor(test_input_ids)
-        test_labels = torch.tensor(test_labels)
-        test_masks = torch.tensor(test_attention_masks)
-
-        # Create an iterator of our data with torch DataLoader. 
-        train_data = TensorDataset(train_inputs, train_masks, train_labels)
-        validation_data = TensorDataset(validation_inputs, validation_masks, validation_labels)
-        prediction_data = TensorDataset(test_inputs, test_masks, test_labels)
-        
-        dataset_dir = 'dataset/{}'.format(args.dataset)
-        if not os.path.exists(dataset_dir):
-            os.makedirs(dataset_dir)
-            
-        torch.save(train_data, dataset_dir+'/train.pt')
-        torch.save(validation_data, dataset_dir+'/val.pt')
-        torch.save(prediction_data, dataset_dir+'/test.pt')
-
-    else:
-        dataset_dir = 'dataset/{}'.format(args.dataset)
-        train_data = torch.load(dataset_dir+'/train.pt')
-        validation_data = torch.load(dataset_dir+'/val.pt')
-        prediction_data = torch.load(dataset_dir+'/test.pt')
-
+    print('Loading saved dataset checkpoints for training...')
+    dataset_dir = 'dataset/{}'.format(args.dataset)
+    train_data = torch.load(dataset_dir+'/train.pt')
+    validation_data = torch.load(dataset_dir+'/val.pt')
+    prediction_data = torch.load(dataset_dir+'/test.pt')
 
     train_sampler = RandomSampler(train_data)
     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size)
