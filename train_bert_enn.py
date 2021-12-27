@@ -26,8 +26,8 @@ def main():
 
     parser.add_argument("--weight_decay", default=0.0, type=float, help="Weight decay if we apply some.")
 
-    parser.add_argument("--beta_in", default=0, type=float, help="Weight of on manifold reg")
-    parser.add_argument("--beta_oe", default=1, type=float, help="Weight of off manifold reg")
+    parser.add_argument("--beta_in", default=0, type=float, help="Weight of in-distribution")
+    parser.add_argument("--beta_oe", default=1, type=float, help="Weight of OE reg")
     parser.add_argument("--beta_off", default=0.1, type=float, help="Weight of off manifold reg")
     parser.add_argument('--eps_out', default=0.01, type=float,
                         help="Perturbation size of out-of-domain adversarial training")
