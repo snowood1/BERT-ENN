@@ -64,7 +64,7 @@ The necessary packages include:
 	CUDA_VISIBLE_DEVICES=0 python bert_oe.py --dataset sst --seed 0			# Outlier Explosure
 	
 	
- **ENN**.  Below we use the Hyper-parameters in Table 5.
+ **ENN**.  Below we use the Hyper-parameters in Table 5. For vanilla ENN, all the betas are set to 0.
  
  	CUDA_VISIBLE_DEVICES=0 python train_bert_enn.py --dataset 20news --beta_in 0 --beta_oe 1 --beta_off 0.1
 	CUDA_VISIBLE_DEVICES=0 python train_bert_enn.py --dataset trec --beta_in 0 --beta_oe 1 --beta_off 0.1
