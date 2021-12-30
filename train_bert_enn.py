@@ -390,7 +390,7 @@ def main():
             print('Epoch:%d' % epoch, file=file)
             print(train_log, file=file)
             print(test_log, file=file)
-            if args.evaluate_benchmark == 'n':
+            if args.evaluate_ood == 'n':
                 print(ood_log, file=file)
 
         for df_record in ['df_train', 'df_train_avg', 'df_test', 'df_test_avg', 'df_ood', 'df_ood_avg']:
