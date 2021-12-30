@@ -28,12 +28,11 @@ The necessary packages include:
 1. Create folders 'dataset' and 'model_save' to save downloaded datasets and output results.
 	
 	We follow the same datasets in [Outlier Exposure](https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification). 
-  	
-	You can simply download the preprocessed datasets and the saved results [from here.](https://drive.google.com/drive/folders/1qAoUzQqo-Ys51LFgzvJpAH3fvLP4hhgM?usp=sharing)
 	The preprocessing can be reproduced by: 
 	
 		python prepare_data.py
 
+	However, you can download the preprocessed datasets and the saved results [from here.](https://drive.google.com/drive/folders/1qAoUzQqo-Ys51LFgzvJpAH3fvLP4hhgM?usp=sharing).
 
 2.  To reproduce results of Table 3 and 4 using the saved checkpoints, run the code below: (You can change sst to 20news or trec.  )
 
