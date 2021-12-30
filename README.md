@@ -28,7 +28,7 @@ The necessary packages include:
 1. Create folders 'dataset' and 'model_save' to save downloaded datasets and output results.
 	
 	We follow the same datasets in [Outlier Exposure](https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification). 
-	You can download the preprocessed datasets and the saved results [from here.](https://drive.google.com/drive/folders/1qAoUzQqo-Ys51LFgzvJpAH3fvLP4hhgM?usp=sharing).
+	You can download the preprocessed datasets and the saved results [from here](https://drive.google.com/drive/folders/1qAoUzQqo-Ys51LFgzvJpAH3fvLP4hhgM?usp=sharing).
 	The preprocessing can be reproduced by: 
 	
 		python prepare_data.py
