@@ -37,7 +37,7 @@ def main():
     parser.add_argument('--pretrain', type=str, default=None)
     parser.add_argument('--evaluate_benchmark', type=str, default='y', help='whether to evaluate on all the OOD datasets. This will overwrite the option --out_dataset')
     parser.add_argument('--MAX_LEN', type=int, default=150)
-    parser.add_argument("--base_rate", default=1, type=int, help="base rate N:1")
+    parser.add_argument("--base_rate", default=5, type=int, help="base rate N:1")
     parser.add_argument('--recall_level', type=float, default=0.9)
     args = parser.parse_args()
 
@@ -213,11 +213,12 @@ def main():
 
                 if torch.cuda.device_count() > 1:
                     loss_off = loss_off.mean()
-
-                optimizer.zero_grad()
-                loss_off.backward()
-                torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
-                optimizer.step()
+                    
+                if loss_off > 0:
+                    optimizer.zero_grad()
+                    loss_off.backward()
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
+                    optimizer.step()
 
             else:
                 loss_off = torch.tensor(0)
