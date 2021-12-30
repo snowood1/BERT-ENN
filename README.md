@@ -25,17 +25,17 @@ The necessary packages include:
 
 ## Quick Start
 
-1. Create folders 'dataset' and 'model_save' to save downloaded datasets and output results.
+**1.** Create folders 'dataset' and 'model_save' to save downloaded datasets and output results.
 	
-	We follow the same datasets in [Outlier Exposure](https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification). 
-	You can download the preprocessed datasets and the saved results [from here](https://drive.google.com/drive/folders/1qAoUzQqo-Ys51LFgzvJpAH3fvLP4hhgM?usp=sharing).
-	The preprocessing can be reproduced by: 
+We follow the same datasets in [Outlier Exposure](https://github.com/hendrycks/outlier-exposure/tree/master/NLP_classification). 
+You can download the preprocessed datasets and the saved results [from here](https://drive.google.com/drive/folders/1qAoUzQqo-Ys51LFgzvJpAH3fvLP4hhgM?usp=sharing).
+The preprocessing can be reproduced by: 
 	
 		python prepare_data.py
 
-2.  To reproduce results of Table 3 and 4 using the saved checkpoints, run the code below: (You can change sst to 20news or trec.  )
+**2.**  To reproduce results of Table 3 and 4 using the saved checkpoints, run the code below: (You can change sst to 20news or trec.  )
 
- **Baselines**
+ Baselines
 	
 	CUDA_VISIBLE_DEVICES=0 python test_bert.py --model base --dataset sst --save_path saved_result --index 0		# maximum softmax scores
 	CUDA_VISIBLE_DEVICES=0 python test_bert.py --model mc-dropout --dataset sst --save_path saved_result  --index 0		# MC-dropout
@@ -44,7 +44,7 @@ The necessary packages include:
 	CUDA_VISIBLE_DEVICES=0 python test_bert.py --model oe --dataset sst --save_path saved_result  --index 0			# Outlier Explosure
 	
 	
- **ENN**
+ ENN
 	
 	CUDA_VISIBLE_DEVICES=0 python test_bert_enn.py --dataset sst --path ./saved_result/sst/ENN_ori/9.pt	# Vanilla ENN
 	CUDA_VISIBLE_DEVICES=0 python test_bert_enn.py --dataset sst --path ./saved_result/sst/ENN_OE/9.pt	# ENN with Outlier Explosure
@@ -53,25 +53,26 @@ The necessary packages include:
 	
 
 
-3.  To train ENN models from scratch:
+**3.**  To train ENN models from scratch:
 
-**Baselines**
+Baselines
 	
 	CUDA_VISIBLE_DEVICES=0 python bert.py --dataset sst --seed 0			# vanilla BERT for maximum softmax scores, MC-dropout and temperature scaling
 	CUDA_VISIBLE_DEVICES=0 python manifold-smoothing.py --dataset sst --seed 0 	# Manifold smoothing
 	CUDA_VISIBLE_DEVICES=0 python bert_oe.py --dataset sst --seed 0			# Outlier Explosure
 	
 	
- **ENN**.  Below we use the Hyper-parameters in Table 5. For vanilla ENN, all the betas are set to 0.
+ ENN.  Below we use the Hyper-parameters in Table 5. For vanilla ENN, all the betas are set to 0.
  
  	CUDA_VISIBLE_DEVICES=0 python train_bert_enn.py --dataset 20news --beta_in 0 --beta_oe 1 --beta_off 0.1
 	CUDA_VISIBLE_DEVICES=0 python train_bert_enn.py --dataset trec --beta_in 0 --beta_oe 1 --beta_off 0.1
 	CUDA_VISIBLE_DEVICES=0 python train_bert_enn.py --dataset sst --beta_in 0.01 --beta_oe 1 --beta_off 0.1
 
 
-4.  To evaluate your trained models, you can follow Step 2 but replace the input checkpoints paths. For example:
 
-**Baselines**
+**4.**  To evaluate your trained models, you can follow Step 2 but replace the input checkpoints paths. For example:
+
+Baselines
 	
 	CUDA_VISIBLE_DEVICES=0 python test_bert.py --model base --dataset sst --save_path model_save --index 0			# maximum softmax scores
 	CUDA_VISIBLE_DEVICES=0 python test_bert.py --model mc-dropout --dataset sst --save_path model_save --index 0		# MC-dropout
@@ -80,14 +81,14 @@ The necessary packages include:
 	CUDA_VISIBLE_DEVICES=0 python test_bert.py --model oe -dataset sst --save_path model_save --index 0			# Outlier Explosure
 	
 	
- **ENN**
+ ENN
  
  	CUDA_VISIBLE_DEVICES=0 python test_bert_enn.py --dataset 20news --path ./model_save/20news/BERT-ENN-w2adv-0-on-0.0-oe-1.0-off-0.1/9.pt
 	CUDA_VISIBLE_DEVICES=0 python test_bert_enn.py --dataset trec --path ./model_save/trec/BERT-ENN-w2adv-0-on-0.0-oe-1.0-off-0.1/9.pt
 	CUDA_VISIBLE_DEVICES=0 python test_bert_enn.py --dataset sst --path ./model_save/sst/BERT-ENN-w2adv-0-on-0.01-oe-1.0-off-0.1/9.pt
 	
 
-5. We also provide an [example](https://github.com/snowood1/BERT-ENN/blob/main/demo%20result%20figures-final.ipynb) of plotting Figure 3 and Figure 4.
+**5.** We also provide an [example](https://github.com/snowood1/BERT-ENN/blob/main/demo%20result%20figures-final.ipynb) of plotting Figure 3 and Figure 4.
 	
 
 ## Reference
