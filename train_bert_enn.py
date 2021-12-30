@@ -35,7 +35,7 @@ def main():
                         help='warn up epochs')
     parser.add_argument('--grad_clip', type=float, default=1)
     parser.add_argument('--pretrain', type=str, default=None)
-    parser.add_argument('--evaluate_benchmark', type=str, default='y', help='whether to evaluate on all the OOD datasets. This will overwrite the option --out_dataset')
+    parser.add_argument('--evaluate_ood', type=str, default='y', help='whether to evaluate --out_dataset')
     parser.add_argument('--MAX_LEN', type=int, default=150)
     parser.add_argument("--base_rate", default=5, type=int, help="base rate N:1")
     parser.add_argument('--recall_level', type=float, default=0.9)
@@ -332,7 +332,7 @@ def main():
 
         ## test on out-of-distribution data  ###################
 
-        if args.evaluate_benchmark == 'n':
+        if args.evaluate_ood == 'y':
             in_num_examples = len(in_score['in_ent'])
             ood_MAX_NUM = in_num_examples // args.base_rate
             RECALL_LEVEL = args.recall_level
